@@ -22,18 +22,20 @@ import javax.swing.JToolBar;
 class Chessboard extends JPanel {
     public static final int ZEROX = 23;
     public static final int ZEROY = 7;
-    private HashMap<Point, IPiece> board = new HashMap<Point, IPiece>();
+    public PieceFactory pieces;
     private Image image;
     
-    public void drop(IPiece paramIPiece, int paramInt1, int paramInt2) {
+    public void drop(IPiece piece, int x, int y) {
         repaint();
-        this.board.put(new Point(paramInt1, paramInt2), paramIPiece);
+        pieces.OverridePosition(new Point(x, y), piece);
+        // this.board.put(new Point(x, y), piece);
     }
     
-    public IPiece take(int paramInt1, int paramInt2) {
-        clickPos = new Point(paramInt1,paramInt2);
+    public IPiece take(int x, int y) {
+        clickPos = new Point(x, y);
         repaint();
-        return this.board.remove(new Point(paramInt1, paramInt2));
+        // return this.board.remove(new Point(x, y));
+        return pieces.Remove(new Point(x, y));
     }
     
     private IPiece dragged = null;
@@ -42,19 +44,19 @@ class Chessboard extends JPanel {
     public static Point current = null;
     public static Point clickPos = null;
     
-    public void paint(Graphics paramGraphics) {
-        paramGraphics.drawImage(this.image, 0, 0, null);
+    public void paint(Graphics graphics) {
+        graphics.drawImage(this.image, 0, 0, null);
 
-        for (Entry<Point, IPiece> localEntry : this.board.entrySet()) {
+        for (Entry<Point, IPiece> localEntry : pieces.GetAll()) {
             Point localPoint = localEntry.getKey();
             IPiece localIPiece = localEntry.getValue();
             current = localPoint;
-            localIPiece.draw((Graphics2D)paramGraphics);
+            localIPiece.draw((Graphics2D)graphics);
         }
 
         if ((mouse != null) && (dragged != null)) {
             current = clickPos;
-            dragged.draw((Graphics2D)paramGraphics);
+            // pieces.Draw(dragged, (Graphics2D)graphics);
         }
     }
     
@@ -63,17 +65,19 @@ class Chessboard extends JPanel {
         localAffineTransform.translate(23.0D, 7.0D);
         localAffineTransform.scale(32.0D, 32.0D);
 
-        this.board.put(new Point(0, 2), new AffineDecorator(new Piece(11), localAffineTransform));
-        this.board.put(new Point(0, 6), new AffineDecorator(new Piece(0),  localAffineTransform));
-        this.board.put(new Point(1, 4), new AffineDecorator(new Piece(6),  localAffineTransform));
-        this.board.put(new Point(1, 5), new AffineDecorator(new Piece(5),  localAffineTransform));
-        this.board.put(new Point(3, 7), new AffineDecorator(new Piece(1),  localAffineTransform));
-        this.board.put(new Point(4, 3), new AffineDecorator(new Piece(6),  localAffineTransform));
-        this.board.put(new Point(4, 4), new AffineDecorator(new Piece(7),  localAffineTransform));
-        this.board.put(new Point(5, 4), new AffineDecorator(new Piece(6),  localAffineTransform));
-        this.board.put(new Point(5, 6), new AffineDecorator(new Piece(0),  localAffineTransform));
-        this.board.put(new Point(6, 5), new AffineDecorator(new Piece(0),  localAffineTransform));
-        this.board.put(new Point(7, 4), new AffineDecorator(new Piece(0),  localAffineTransform));
+        pieces = new PieceFactory();
+
+        pieces.Create(new Point(0, 2), 11, localAffineTransform);
+        pieces.Create(new Point(0, 6), 0,  localAffineTransform);
+        pieces.Create(new Point(1, 4), 6,  localAffineTransform);
+        pieces.Create(new Point(1, 5), 5,  localAffineTransform);
+        pieces.Create(new Point(3, 7), 1,  localAffineTransform);
+        pieces.Create(new Point(4, 3), 6,  localAffineTransform);
+        pieces.Create(new Point(4, 4), 7,  localAffineTransform);
+        pieces.Create(new Point(5, 4), 6,  localAffineTransform);
+        pieces.Create(new Point(5, 6), 0,  localAffineTransform);
+        pieces.Create(new Point(6, 5), 0,  localAffineTransform);
+        pieces.Create(new Point(7, 4), 0,  localAffineTransform);
         
 
         try {
