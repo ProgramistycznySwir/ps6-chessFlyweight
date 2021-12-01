@@ -22,28 +22,25 @@ class Chessboard extends JPanel {
     
     private Point draggedFrom = null;
     AffineTransform draggedTransform = null;
-    private Point mouse = null;
-    public static Point current = null;
-    public static Point clickPos = null;
+    private Point mousePos = null;
+    private Graphics boardGraphics;
     
     public void paint(Graphics graphics) {
         graphics.drawImage(this.image, 0, 0, null);
 
-        current = pieces.DrawAll((Graphics2D)graphics);
+        pieces.DrawAll((Graphics2D)graphics);
 
-        if ((mouse != null) && (draggedFrom != null)) {
-            current = clickPos;
-            // pieces.Draw(dragged, (Graphics2D)graphics);
-        }
+        if ((mousePos != null) && (draggedFrom != null))
+            pieces.DrawDragged(mousePos, (Graphics2D)graphics);
     }
     
     Chessboard() {
-        AffineTransform localAffineTransform = new AffineTransform();
-        localAffineTransform.translate(23.0D, 7.0D);
-        localAffineTransform.scale(32.0D, 32.0D);
+        AffineTransform affineTransform = new AffineTransform();
+        affineTransform.translate(23.0D, 7.0D);
+        affineTransform.scale(32.0D, 32.0D);
 
         pieces = new PieceFactory();
-        DEBUG_SeedPieces(localAffineTransform);
+        DEBUG_SeedPieces(affineTransform);
 
         try {
             image = new ImageIcon("board3.png").getImage();
@@ -59,7 +56,7 @@ class Chessboard extends JPanel {
                 draggedFrom = new Point(
                         (mouseEvent.getX() - 23) / 32,
                         (mouseEvent.getY() - 7) / 32);
-                mouse = mouseEvent.getPoint();
+                mousePos = mouseEvent.getPoint();
             }
             public void mouseReleased(MouseEvent mouseEvent) {
                 repaint();
@@ -71,8 +68,9 @@ class Chessboard extends JPanel {
             }
         });
         addMouseMotionListener(new MouseMotionAdapter() {
-            public void mouseDragged(MouseEvent paramAnonymousMouseEvent) {
-                draggedTransform.setToTranslation(paramAnonymousMouseEvent.getX() - mouse.getX(), paramAnonymousMouseEvent.getY() - mouse.getY());                
+            public void mouseDragged(MouseEvent mouseEvent) {
+                draggedTransform.setToTranslation(mouseEvent.getX() - mousePos.getX(), mouseEvent.getY() - mousePos.getY());
+                pieces.DrawDragged(mouseEvent.getPoint(), (Graphics2D)boardGraphics);
                 repaint();
             }
         });

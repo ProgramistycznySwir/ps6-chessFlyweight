@@ -8,11 +8,13 @@ import java.awt.Graphics2D;
 
 public class PieceFactory {
     private HashMap<Point, IPiece> pieces = new HashMap<Point, IPiece>();
+    private IPiece dragged;
 
     // this.board.put(new Point(0, 2), new AffineDecorator(new Piece(11), localAffineTransform));
 
     public void MovePiece(Point from, Point to){
-        pieces.put(to, pieces.remove(from));
+        dragged = pieces.remove(from);
+        pieces.put(to, dragged);
     }
     public void OverridePosition(Point point, IPiece piece) {
         pieces.put(point, piece);
@@ -36,18 +38,17 @@ public class PieceFactory {
     public void Draw(Point piecePos, Graphics2D graphics) {
         pieces.get(piecePos).draw(graphics, piecePos);
     }
+    public void DrawDragged(Point draggedPos, Graphics2D graphics) {
+        dragged.draw(graphics, draggedPos);
+    }
     
 
     // TODO: throw this out.
     public Set<Entry<Point, IPiece>> GetAll() {
         return pieces.entrySet();
     }
-    public Point DrawAll(Graphics2D graphics) {
-        Point result = new Point();
-        for(Entry<Point, IPiece> keyValue : pieces.entrySet()) {
-            result = keyValue.getKey();
-            keyValue.getValue().draw(graphics, result);
-        }
-        return result;
+    public void DrawAll(Graphics2D graphics) {
+        for(Entry<Point, IPiece> keyValue : pieces.entrySet())
+            keyValue.getValue().draw(graphics, keyValue.getKey());
     }
 }
