@@ -10,7 +10,9 @@ public class PieceFactory {
 
     // this.board.put(new Point(0, 2), new AffineDecorator(new Piece(11), localAffineTransform));
 
-
+    public void MovePiece(Point from, Point to){
+        pieces.put(to, pieces.remove(from));
+    }
     public void OverridePosition(Point point, IPiece piece) {
         pieces.put(point, piece);
     }
@@ -38,4 +40,7 @@ public class PieceFactory {
     public Set<Entry<Point, IPiece>> GetAll() {
         return pieces.entrySet();
     }
+    // public void DrawAll() {
+    //     return pieces.entrySet();
+    // }
 }

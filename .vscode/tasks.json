@@ -3,7 +3,7 @@
 	"tasks": [
 		{
 			"type": "java",
-			"mainClass": "Chessboard",
+			"mainClass": "Main",
 			"targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
 			"elements": [
 				"${compileOutput}",

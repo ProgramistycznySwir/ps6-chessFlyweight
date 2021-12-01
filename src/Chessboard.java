@@ -3,21 +3,17 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.AffineTransform;
-import java.util.HashMap;
 import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JToolBar;
 
 class Chessboard extends JPanel {
     public static final int ZEROX = 23;
@@ -25,20 +21,7 @@ class Chessboard extends JPanel {
     public PieceFactory pieces;
     private Image image;
     
-    public void drop(IPiece piece, int x, int y) {
-        repaint();
-        pieces.OverridePosition(new Point(x, y), piece);
-        // this.board.put(new Point(x, y), piece);
-    }
-    
-    public IPiece take(int x, int y) {
-        clickPos = new Point(x, y);
-        repaint();
-        // return this.board.remove(new Point(x, y));
-        return pieces.Remove(new Point(x, y));
-    }
-    
-    private IPiece dragged = null;
+    private Point draggedFrom = null;
     AffineTransform draggedTransform = null;
     private Point mouse = null;
     public static Point current = null;
@@ -54,7 +37,7 @@ class Chessboard extends JPanel {
             localIPiece.draw((Graphics2D)graphics);
         }
 
-        if ((mouse != null) && (dragged != null)) {
+        if ((mouse != null) && (draggedFrom != null)) {
             current = clickPos;
             // pieces.Draw(dragged, (Graphics2D)graphics);
         }
@@ -66,19 +49,7 @@ class Chessboard extends JPanel {
         localAffineTransform.scale(32.0D, 32.0D);
 
         pieces = new PieceFactory();
-
-        pieces.Create(new Point(0, 2), 11, localAffineTransform);
-        pieces.Create(new Point(0, 6), 0,  localAffineTransform);
-        pieces.Create(new Point(1, 4), 6,  localAffineTransform);
-        pieces.Create(new Point(1, 5), 5,  localAffineTransform);
-        pieces.Create(new Point(3, 7), 1,  localAffineTransform);
-        pieces.Create(new Point(4, 3), 6,  localAffineTransform);
-        pieces.Create(new Point(4, 4), 7,  localAffineTransform);
-        pieces.Create(new Point(5, 4), 6,  localAffineTransform);
-        pieces.Create(new Point(5, 6), 0,  localAffineTransform);
-        pieces.Create(new Point(6, 5), 0,  localAffineTransform);
-        pieces.Create(new Point(7, 4), 0,  localAffineTransform);
-        
+        DEBUG_SeedPieces(localAffineTransform);
 
         try {
             image = new ImageIcon("board3.png").getImage();
@@ -89,19 +60,19 @@ class Chessboard extends JPanel {
         setPreferredSize(new Dimension(image.getWidth(null), image.getHeight(null)));
         
         addMouseListener(new MouseAdapter() {
-            public void mousePressed(MouseEvent paramAnonymousMouseEvent) {
-                dragged = take(
-                        (paramAnonymousMouseEvent.getX() - 23) / 32,
-                        (paramAnonymousMouseEvent.getY() - 7) / 32);
-                dragged = new AffineDecorator(dragged, new AffineTransform());
-                mouse = paramAnonymousMouseEvent.getPoint();
+            public void mousePressed(MouseEvent mouseEvent) {
+                repaint();
+                draggedFrom = new Point(
+                        (mouseEvent.getX() - 23) / 32,
+                        (mouseEvent.getY() - 7) / 32);
+                mouse = mouseEvent.getPoint();
             }
-            public void mouseReleased(MouseEvent paramAnonymousMouseEvent) {
-                drop(
-                        Chessboard.this.dragged.getDecorated(),
-                        (paramAnonymousMouseEvent.getX() - 23) / 32,
-                        (paramAnonymousMouseEvent.getY() - 7) / 32);
-                dragged = null;
+            public void mouseReleased(MouseEvent mouseEvent) {
+                repaint();
+                pieces.MovePiece(draggedFrom, new Point(
+                        (mouseEvent.getX() - 23) / 32,
+                        (mouseEvent.getY() - 7) / 32));
+                draggedFrom = null;
                 undo.setEnabled(true);
             }
         });
@@ -126,31 +97,17 @@ class Chessboard extends JPanel {
 		}
 	}
     
-    public static void main(String[] paramArrayOfString) {
-        JFrame frame = new JFrame("Chess");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        Chessboard board = new Chessboard();
-        
-        JToolBar bar = new JToolBar();
-        try {
-            board.undo = new JButton(new ImageIcon("undo.png"));
-            board.redo = new JButton(new ImageIcon("redo.png"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
-        board.undo.addActionListener(board.new UndoButton());
-        board.redo.addActionListener(board.new RedoButton());
-        board.undo.setEnabled(false);
-        board.redo.setEnabled(false);
-        bar.add(board.undo);
-        bar.add(board.redo);
-        
-        frame.add(bar, BorderLayout.PAGE_START);
-        frame.add(board);
-        
-        frame.pack();
-        frame.setVisible(true);
+    void DEBUG_SeedPieces(AffineTransform affineTransform) {
+        pieces.Create(new Point(0, 2), 11, affineTransform);
+        pieces.Create(new Point(0, 6), 0,  affineTransform);
+        pieces.Create(new Point(1, 4), 6,  affineTransform);
+        pieces.Create(new Point(1, 5), 5,  affineTransform);
+        pieces.Create(new Point(3, 7), 1,  affineTransform);
+        pieces.Create(new Point(4, 3), 6,  affineTransform);
+        pieces.Create(new Point(4, 4), 7,  affineTransform);
+        pieces.Create(new Point(5, 4), 6,  affineTransform);
+        pieces.Create(new Point(5, 6), 0,  affineTransform);
+        pieces.Create(new Point(6, 5), 0,  affineTransform);
+        pieces.Create(new Point(7, 4), 0,  affineTransform);
     }
 }
