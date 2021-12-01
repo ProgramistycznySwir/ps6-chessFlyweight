@@ -41,12 +41,6 @@ public class PieceFactory {
     public void DrawDragged(Point draggedPos, Graphics2D graphics) {
         dragged.draw(graphics, draggedPos);
     }
-    
-
-    // TODO: throw this out.
-    public Set<Entry<Point, IPiece>> GetAll() {
-        return pieces.entrySet();
-    }
     public void DrawAll(Graphics2D graphics) {
         for(Entry<Point, IPiece> keyValue : pieces.entrySet())
             keyValue.getValue().draw(graphics, keyValue.getKey());
