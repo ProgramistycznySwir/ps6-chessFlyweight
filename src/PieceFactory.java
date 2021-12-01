@@ -1,3 +1,4 @@
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map.Entry;
@@ -33,14 +34,20 @@ public class PieceFactory {
     }
 
     public void Draw(Point piecePos, Graphics2D graphics) {
-        pieces.get(piecePos).draw(graphics);
+        pieces.get(piecePos).draw(graphics, piecePos);
     }
+    
 
     // TODO: throw this out.
     public Set<Entry<Point, IPiece>> GetAll() {
         return pieces.entrySet();
     }
-    // public void DrawAll() {
-    //     return pieces.entrySet();
-    // }
+    public Point DrawAll(Graphics2D graphics) {
+        Point result = new Point();
+        for(Entry<Point, IPiece> keyValue : pieces.entrySet()) {
+            result = keyValue.getKey();
+            keyValue.getValue().draw(graphics, result);
+        }
+        return result;
+    }
 }

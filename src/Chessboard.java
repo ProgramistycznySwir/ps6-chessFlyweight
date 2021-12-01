@@ -9,7 +9,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.geom.AffineTransform;
-import java.util.Map.Entry;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -30,12 +29,7 @@ class Chessboard extends JPanel {
     public void paint(Graphics graphics) {
         graphics.drawImage(this.image, 0, 0, null);
 
-        for (Entry<Point, IPiece> localEntry : pieces.GetAll()) {
-            Point localPoint = localEntry.getKey();
-            IPiece localIPiece = localEntry.getValue();
-            current = localPoint;
-            localIPiece.draw((Graphics2D)graphics);
-        }
+        current = pieces.DrawAll((Graphics2D)graphics);
 
         if ((mouse != null) && (draggedFrom != null)) {
             current = clickPos;

@@ -1,5 +1,6 @@
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Point;
 
 import javax.swing.ImageIcon;
 
@@ -15,13 +16,13 @@ class Piece implements IPiece {
         this.index = paramInt1;
     }
     
-    public void draw(Graphics2D paramGraphics2D) {
+    public void draw(Graphics2D paramGraphics2D, Point point) {
         paramGraphics2D.drawImage(
                 image,
-                Chessboard.current.x,
-                Chessboard.current.y,
-                Chessboard.current.x+ 1,
-                Chessboard.current.y + 1,
+                point.x,
+                point.y,
+                point.x + 1,
+                point.y + 1,
                 this.index * 32,
                 0,
                 (this.index + 1) * 32,

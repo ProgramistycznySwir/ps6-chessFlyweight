@@ -1,4 +1,5 @@
 import java.awt.Graphics2D;
+import java.awt.Point;
 
 class Decorator implements IPiece
 {
@@ -16,8 +17,8 @@ class Decorator implements IPiece
         this.piece = paramIPiece;
     }
     
-    public void draw(Graphics2D paramGraphics2D) {
-        this.piece.draw(paramGraphics2D);
+    public void draw(Graphics2D paramGraphics2D, Point point) {
+        this.piece.draw(paramGraphics2D, point);
     }
     
     public void moveTo(int paramInt1, int paramInt2) {
